@@ -17,7 +17,7 @@ function Login() {
     if (result?.error) {
       console.log(result.error);
     } else {
-      router.push("/");
+      router.push("/videos");
     }
   };
   return (

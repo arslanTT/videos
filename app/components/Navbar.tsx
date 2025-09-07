@@ -1,114 +1,143 @@
-// "use client";
-
-// import Link from "next/link";
-// import { useSession, signIn, signOut } from "next-auth/react";
-
-// export default function Navbar() {
-//   const { data: session } = useSession();
-
-//   return (
-//     <nav className="w-full bg-gray-900 text-white shadow">
-//       <div className="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
-//         {/* Logo / Name */}
-//         <Link
-//           href="/"
-//           className="text-xl font-bold hover:text-blue-400 transition"
-//         >
-//           ClipStream
-//         </Link>
-
-//         {/* Nav Links */}
-//         <div className="flex items-center gap-4">
-//           {session && (
-//             <Link href="/upload" className="hover:text-blue-400 transition">
-//               Upload
-//             </Link>
-//           )}
-
-//           {!session ? (
-//             <button
-//               onClick={() => signIn()}
-//               className="bg-blue-500 px-3 py-1 rounded hover:bg-blue-600 transition"
-//             >
-//               Login
-//             </button>
-//           ) : (
-//             <button
-//               onClick={() => signOut()}
-//               className="bg-red-500 px-3 py-1 rounded hover:bg-red-600 transition"
-//             >
-//               Logout
-//             </button>
-//           )}
-//         </div>
-//       </div>
-//     </nav>
-//   );
-// }
-
 "use client";
 
 import Link from "next/link";
+import { useSession, signIn, signOut } from "next-auth/react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Home, Upload, LogIn, LogOut, User } from "lucide-react";
-
-interface NavbarProps {
-  isLoggedIn?: boolean;
-  username?: string;
+import {
+  LogIn,
+  LogOut,
+  User,
+  LayoutDashboard,
+  Menu,
+  Upload,
+} from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
+import Image from "next/image";
+interface Props {
+  isDashboard?: boolean;
 }
+export default function Navbar({ isDashboard = false }: Props) {
+  const { data: session, status } = useSession();
+  const isLoading = status === "loading";
+  const isLoggedIn = !!session;
+  const username = session?.user?.name || session?.user?.email?.split("@")[0];
 
-export default function VideosNavbar({
-  isLoggedIn = false,
-  username,
-}: NavbarProps) {
+  const handleSignOut = () => {
+    signOut({ callbackUrl: "/" });
+  };
+
+  const handleSignIn = () => {
+    signIn();
+  };
+
   return (
     <nav className="w-full bg-background border-b shadow-sm sticky top-0 z-50">
       <div className="container mx-auto flex items-center justify-between px-4 py-3">
-        {/* Left side: Logo */}
-        <Link href="/" className="flex items-center gap-2">
-          <Home className="h-6 w-6 text-primary" />
-          <span className="font-bold text-lg">AI Shorts</span>
+        {/* Logo */}
+        <Link
+          href="/videos"
+          className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+        >
+          <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+            <Image
+              src={"/download.svg"}
+              alt={"logo"}
+              width={48}
+              height={48}
+              className="h-12 w-12 object-contain"
+            />
+          </div>
+          <span className="font-bold text-xl text-foreground">UpView</span>
         </Link>
 
-        {/* Middle: Search */}
-        <div className="hidden sm:flex w-1/3">
-          <Input
-            type="text"
-            placeholder="Search videos..."
-            className="w-full"
-          />
-        </div>
-
-        {/* Right side: Auth / Upload */}
-        <div className="flex items-center gap-2">
-          {isLoggedIn ? (
-            <>
-              <span className="hidden sm:inline text-muted-foreground text-sm">
-                {username ? `Hi, ${username}` : ""}
-              </span>
-              <Link href="/upload">
-                <Button variant="outline" size="sm" className="gap-1">
-                  <Upload className="h-4 w-4" />
-                  Upload
-                </Button>
-              </Link>
-              <Button variant="ghost" size="sm" className="gap-1">
-                <LogOut className="h-4 w-4" />
-              </Button>
-            </>
+        {/* Navigation Actions */}
+        <div className="flex items-center gap-3">
+          {isLoading ? (
+            <div className="h-9 w-20 bg-muted animate-pulse rounded-md" />
+          ) : !isLoggedIn ? (
+            <Button
+              onClick={handleSignIn}
+              variant="default"
+              size="sm"
+              className="gap-2"
+            >
+              <LogIn className="h-4 w-4" />
+              Login
+            </Button>
           ) : (
-            <Link href="/login">
-              <Button variant="default" size="sm" className="gap-1">
-                <LogIn className="h-4 w-4" />
-                Login
-              </Button>
-            </Link>
-          )}
+            <>
+              {/* Desktop View */}
+              <div className="hidden md:flex items-center gap-3">
+                <span className="text-muted-foreground text-sm">
+                  Hi, {username}
+                </span>
 
-          <Button variant="ghost" size="sm" className="gap-1 sm:hidden">
-            <User className="h-4 w-4" />
-          </Button>
+                {isDashboard ? (
+                  <Link href="/upload">
+                    <Button variant="outline" size="sm" className="gap-2">
+                      <Upload className="h-4 w-4" />
+                      Upload
+                    </Button>
+                  </Link>
+                ) : (
+                  <Link href="/dashboard">
+                    <Button variant="outline" size="sm" className="gap-2">
+                      <LayoutDashboard className="h-4 w-4" />
+                      Dashboard
+                    </Button>
+                  </Link>
+                )}
+
+                <Button
+                  onClick={handleSignOut}
+                  variant="ghost"
+                  size="sm"
+                  className="gap-2 hover:bg-destructive/10 hover:text-destructive"
+                >
+                  <LogOut className="h-4 w-4" />
+                  Logout
+                </Button>
+              </div>
+
+              {/* Mobile View - Dropdown Menu */}
+              <div className="md:hidden">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="sm">
+                      <Menu className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-48">
+                    <DropdownMenuItem disabled className="font-medium">
+                      <User className="h-4 w-4 mr-2" />
+                      {username}
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <Link href="/dashboard" className="w-full">
+                        <LayoutDashboard className="h-4 w-4 mr-2" />
+                        Dashboard
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      onClick={handleSignOut}
+                      className="text-destructive focus:text-destructive"
+                    >
+                      <LogOut className="h-4 w-4 mr-2" />
+                      Logout
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </nav>

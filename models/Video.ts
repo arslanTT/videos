@@ -7,6 +7,8 @@ export const VIDEO_DIMENSIONS = {
 
 export interface IVideo {
   _id: mongoose.Types.ObjectId;
+  userId: string;
+  userName: string;
   title: string;
   description: string;
   videoUrl: string;
@@ -21,6 +23,8 @@ export interface IVideo {
 
 const videoSchema = new mongoose.Schema<IVideo>({
   title: { type: String, required: true },
+  userId: { type: String, required: true },
+  userName: { type: String, required: true },
   description: { type: String, required: true },
   controls: { type: Boolean, default: true },
   videoUrl: { type: String, required: true },

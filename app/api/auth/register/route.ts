@@ -5,11 +5,11 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
   try {
-    const { email, password } = await request.json();
+    const { email, password, userName } = await request.json();
 
-    if (!email || !password) {
+    if (!email || !password || !userName) {
       return NextResponse.json(
-        { error: "Email ans password are required!" },
+        { error: "All fields are required " },
         { status: 400 }
       );
     }
@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
     // console.log("❌ ", existingUser);
     if (existingUser) {
       return NextResponse.json(
-        { error: "User with this email already exists." },
+        { message: "User with this email already exists." },
         { status: 400 }
       );
     }
@@ -28,6 +28,7 @@ export async function POST(request: NextRequest) {
     // const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = await User.create({
       email,
+      userName,
       password,
     });
 

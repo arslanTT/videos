@@ -38,7 +38,13 @@ export async function POST(request: NextRequest) {
     const body: IVideo = await request.json();
     // console.log("✅", body.videoUrl);
 
-    if (!body.title || !body.description || !body.videoUrl) {
+    if (
+      !body.title ||
+      !body.description ||
+      !body.videoUrl ||
+      !body.userName ||
+      !body.userId
+    ) {
       return NextResponse.json(
         { error: "please provide required details about video" },
         { status: 400 }
@@ -46,6 +52,8 @@ export async function POST(request: NextRequest) {
     }
     await connectToDB();
     const videoData = {
+      userId: body.userId,
+      userName: body.userName,
       title: body.title,
       description: body.description,
       videoUrl: body.videoUrl,

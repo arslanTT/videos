@@ -8,6 +8,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 export default function PlayVideoPage() {
   const params = useParams();
   const id = params?.id as string;
+  console.log("Video ID from params:", id);
   // console.log(id);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [video, setVideo] = useState<any | null>(null);
@@ -21,6 +22,7 @@ export default function PlayVideoPage() {
         const res = await fetch(`/api/video/${id}`);
         if (!res.ok) throw new Error("Video not found");
         const data = await res.json();
+        console.log("Fetched video data:", data);
         setVideo(data);
         // console.log(video);
       } catch (err) {

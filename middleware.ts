@@ -13,9 +13,10 @@ export default withAuth(
         const { pathname } = req.nextUrl;
         if (
           pathname.startsWith("/api/auth") ||
+          pathname.startsWith("/api/video") ||
           pathname === "/login" ||
           pathname === "/register" ||
-          pathname === "/viewvideo"
+          pathname === "/videos"
         ) {
           return true;
         }
